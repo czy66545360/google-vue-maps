@@ -2,7 +2,7 @@ import GMap from './packages/map/index.js';
 import GIcon from './packages/icon/index.js';
 import GMarker from './packages/marker/index.js';
 import googleMapLoader from './services/googleMapLoader'
-import './assets/style.less'
+import './assets/style.css'
 
 const components = [
   GMap,
