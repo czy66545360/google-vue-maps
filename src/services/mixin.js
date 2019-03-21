@@ -1,16 +1,17 @@
 const mixins = {
   methods: {
     /**
-     * 检查是否有地图实例
+     * 检查是否有实例
+     * @name 实例名称
      */
-    is_G_map () {
+    is_G_instance (name = 'G_map') {
       let setOut = null;
       return new Promise(resolve => {
         const check_G_map = () => {
           const $parent = this.$parent; // 父级实例
-          if ($parent && $parent.G_map) {
+          if ($parent && $parent[name]) {
             if (setOut) clearTimeout(setOut);
-            resolve($parent.G_map)
+            resolve($parent[name])
           } else {
             setOut = setTimeout(check_G_map, 500)
           }

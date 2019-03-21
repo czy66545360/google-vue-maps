@@ -9,7 +9,7 @@
  */
 const GOOGLE_MAP_CONRIG = {
   key: '',
-  protocol: 'https',
+  protocol: 'http',
   hostAndPath: 'maps.googleapis.com/maps',
   plugin: []
 }

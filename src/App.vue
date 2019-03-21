@@ -1,13 +1,23 @@
 <template>
   <div id="app">
     <g-map :opts="mapOpts" @complete="map_complete" :center="[103.86438,30.68673]">
-      <g-marker v-for="(item,index) in markers" :key="index" :center="item.center" :ext_data="{index,item}"
-                @click="click_marker"></g-marker>
+      <g-marker v-for="(item,index) in markers" :key="index" :center="item.center" :icon="item.icon"
+                ref="marker"
+                :label="item.label"
+                :ext_data="{index,item}"
+                @click="click_marker">
+      </g-marker>
+      <g-polyline :path="polyline.path" :strokeColor="polyline.strokeColor"></g-polyline>
+      <g-polygon :path="polygon.path" :strokeColor="polygon.strokeColor" :fillColor="polygon.fillColor"
+                 :fillOpacity="polygon.fillOpacity"></g-polygon>
+      <g-rectangle :bounds="rectangle.bounds"></g-rectangle>
     </g-map>
     <div class="box">
       <div class="but" @click="add_marker">添加 maker</div>
       <div class="but" @click="move_marker">移动 maker</div>
       <div class="but" @click="remove_marker">删除 maker</div>
+      <div class="but" @click="marker_icon">替换 maker.icon</div>
+      <div class="but" @click="add_marker_label">添加 maker.label</div>
     </div>
   </div>
 </template>
@@ -20,9 +30,23 @@
         markers: [
           {
             center: [103.86438, 30.68673],
-            icon: 'https://assets.xiaokakj.com/static/img/chuzuche/dian.png'
+            label: '',
+            icon: ''
           }
         ],
+        polyline: {
+          strokeColor: '#ff5928',
+          path: [[103.86438, 30.68673], [103.86538, 30.68673], [103.86438, 30.68473]]
+        },
+        polygon: {
+          strokeColor: '#494eff',
+          fillColor: '#494eff',
+          fillOpacity: '0.3',
+          path: [[103.86338, 30.68973], [103.86638, 30.68473], [103.86438, 30.68473]]
+        },
+        rectangle: {
+          bounds: [[103.86338, 30.68973], [103.86638, 30.68473]]
+        },
         G_map: null
       }
     },
@@ -31,10 +55,9 @@
         this.G_map = G_map
       },
       add_marker () {
-        const center = [103 + Math.random(), 30 + Math.random()]
+        const center = [103 + Math.random(), 30 + Math.random()];
         this.markers.push({
-          center,
-          icon: 'https://assets.xiaokakj.com/static/img/chuzuche/dian.png'
+          center
         })
       },
       move_marker () {
@@ -47,6 +70,16 @@
       },
       click_marker (e, ext_data) {
         console.log(e, ext_data)
+      },
+      marker_icon () {
+        this.markers.forEach(marker => {
+          marker.icon = 'https://assets.xiaokakj.com/static/img/banche/marker_icon.png'
+        })
+      },
+      add_marker_label () {
+        this.markers.forEach(marker => {
+          marker.label = '我是 label '
+        })
       }
     }
   }

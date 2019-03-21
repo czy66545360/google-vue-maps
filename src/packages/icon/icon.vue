@@ -1,69 +1,55 @@
 <template>
+  <div class="G-icon"></div>
 </template>
 
 <script>
-  import ulits from '../../services/ulits'
-  import eventsConfig from '../../services/eventsConfig'
+  import utils from '../../services/utils'
+  import mixins from '../../services/mixin'
 
   export default {
     name: 'GIcon',
-    props: [
-      'map',
-      'center',
-      'draggable',
-      'icon',
-      'label'
-    ],
+    mixins: [mixins],
+    props: {
+      'marker': {},
+      'anchor': {},
+      'labelOrigin': {},
+      'origin': {},
+      'scaledSize': {},
+      'size': {},
+      'url': {
+        default: 'https://assets.xiaokakj.com/static/img/chuzuche/dian.png'
+      }
+    },
     data () {
       return {
-        G_map: null, // 父级 map 实例
-        G_icon: null // icon 实例
+        G_marker: null // 父级 marker 实例
+      }
+    },
+    watch: {
+      '$props' ($props) {
+        if (this.G_marker) this.G_marker.setIcon($props);
       }
     },
     methods: {
       /**
-       * 创建 marker
+       * 创建 icon
        */
       create_icon () {
-        const G_map = this.G_map;
-        if (!G_map) {
-          console.error('没有发现地图实例');
-          return
-        }
-        const G_icon = this.G_icon = new window.google.maps.Marker({
-          icon: this.icon,
-          map: this.map || G_map,
-          position: ulits.G_position_reset(this.center),
-          draggable: this.draggable
-        });
-        const $listeners = this.$listeners
-        for (let key in $listeners) {
-          this.add_event(key, $listeners[key])
-        }
-        this.$emit('complete', G_icon) // 完成渲染
-      },
-      /**
-       * 注册时间
-       * @param even_name
-       * @param callback
-       */
-      add_event (even_name, callback) {
-        const G_marker = this.G_marker;
-        const marker_events = eventsConfig.marker;
-        if (!G_marker) throw `G_marker:${G_marker}`;
-        if (!marker_events[even_name]) `Marker事件表中没有配置${even_name}这个事件转发`;
-        G_marker.addListener(marker_events[even_name], callback)
+        const $props = this.$props;
+        this.G_marker.setIcon($props);
+        this.$emit('complete', $props) // 完成渲染
       }
     },
     mounted () {
-      const setIn = setInterval(() => {
-        const $parent = this.$parent;
-        if ($parent && $parent.G_map) {
-          clearInterval(setIn);
-          this.G_map = $parent.G_map;
+      if (this.marker) { // 是否传入 外部 marker 实例
+        this.G_marker = this.marker;
+        this.create_icon()
+      } else { // 没有外部实例  就查看父级的 marker 实例
+        this.is_G_instance('G_marker').then((G_marker) => {
+          this.G_marker = G_marker;
           this.create_icon()
-        }
-      }, 1000)
+        })
+      }
     }
   }
 </script>
