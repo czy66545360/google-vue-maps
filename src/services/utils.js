@@ -1,6 +1,6 @@
 module.exports.G_position_reset = (position) => {
   if (!position) {
-    throw `position:${position}`;
+    throw new Error(position);
     return
   }
   if (Array.isArray(position)) {

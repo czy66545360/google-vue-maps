@@ -1,5 +1,5 @@
 <template>
-  <div class="G-marker">
+  <div class="G-polygon">
     <slot></slot>
   </div>
 </template>
@@ -9,57 +9,59 @@
   import mixins from '../../services/mixin'
 
   export default {
-    name: 'GMarker',
+    name: 'GPolygon',
     mixins: [mixins],
     props: [
       'map',
-      'center',
+      'path',
+      'strokeColor',
       'draggable',
-      'icon',
-      'label',
-      'opts',
-      'ext_data'
+      'clickable',
+      'geodesic',
+      'strokeOpacity',
+      'strokeWeight',
+      'fillColor',
+      'fillOpacity',
+      'visible',
+      'zIndex',
+      'opts'
     ],
     data () {
       return {
         G_map: null, // 父级 map 实例
-        G_marker: null // marker 实例
+        G_polygon: null // polygon 实例
       }
     },
-    watch: {
-      center (center) {
-        this.G_marker && this.G_marker.setPosition(utils.G_position_reset(center))
-      },
-      icon (icon) {
-        this.G_marker && this.G_marker.setIcon(icon)
-      },
-      label (label) {
-        this.G_marker && this.G_marker.setLabel(label)
-      }
-    },
+    watch: {},
     methods: {
       /**
-       * 创建 marker
+       * 创建 polygon
        */
-      createMaker () {
+      create_polygon () {
         const G_map = this.G_map; // 地图 实例
         const $props = this.$props; // 属性
         const opts = $props.opts || {}; //  marker 配置
-        const G_marker = this.G_marker = new window.google.maps.Marker({
+        let path = $props.path; // 线路
+        if (path && path.length) { // 转换 path
+          path.map((item, index) => {
+            path[index] = utils.G_position_reset(item)
+          })
+        }
+        const G_polygon = this.G_polygon = new window.google.maps.Polygon({
           ...$props,
           ...opts,
           map: G_map,
-          position: utils.G_position_reset(this.center)
-        }); // 创建 marker
-        this.add_event(G_marker);
-        this.$emit('complete', G_marker) // 完成渲染
+          path
+        }); // 创建 polygon
+        this.add_event(G_polygon);
+        this.$emit('complete', G_polygon) // 完成渲染
       }
     },
     /**
      * 销毁前 删除图标
      */
     beforeDestroy () {
-      if (this.G_marker) this.G_marker.setMap()
+      this.G_polygon && this.G_polygon.setMap()
     },
     /**
      * 开始加载
@@ -67,11 +69,11 @@
     created () {
       if (this.map) { // 是否传入 外部 map 实例
         this.G_map = this.map;
-        this.createMaker()
+        this.create_polygon()
       } else { // 没有外部实例  就查看父级的地图实例
         this.is_G_instance().then((G_map) => {
           this.G_map = G_map;
-          this.createMaker()
+          this.create_polygon()
         })
       }
     }

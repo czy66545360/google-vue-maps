@@ -6,7 +6,7 @@
 </template>
 
 <script>
-  import ulits from '../../services/ulits'
+  import utils from '../../services/utils'
   import mixins from '../../services/mixin'
 
   export default {
@@ -15,7 +15,8 @@
     props: [
       'id',
       'opts',
-      'center'
+      'center',
+      'zoom'
     ],
     data () {
       return {
@@ -41,7 +42,7 @@
         if (!this.center) {
           throw `center:${this.center}`;
         }
-        const opts = {...this.G_opts, center: ulits.G_position_reset(this.center), ...this.opts || {}};
+        const opts = {...this.G_opts, center: utils.G_position_reset(this.center), ...this.opts || {}};
         const G_map = this.G_map = new window.google.maps.Map(map_ele, opts);
         this.add_event(G_map);
         const complete = () => { // 地图加载渲染完成
